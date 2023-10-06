@@ -13,10 +13,11 @@ env.read_env()
 SECRET_KEY = 'django-insecure-%&2qam2777gfl)^uqadtfu!e*!#_*4duh&-o@g8f1%kaj$$+8)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUB')
+DEBUG = env.bool('DEBUB', True)
 
 ALLOWED_HOSTS = ["*"]
 
+TOKEN = env.str('TOKEN')
 
 
 # Application definition
@@ -28,6 +29,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    #apps
+    'bot',
+    'management'
 ]
 
 MIDDLEWARE = [
