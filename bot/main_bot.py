@@ -17,6 +17,8 @@ async def command_start(message : types.Message):
 Для заказа нажмите меню 📌📌📌
     """, reply_markup=kb.get_start_kb())
 
+# @dp.callback_query(F.data == 'get_menu')
+
 @dp.message()
 async def echo_message(message : types.Message):
     await message.answer('Извините я вас не понимаю. Если хотите что то заказать то нажмите на команду /start')   
