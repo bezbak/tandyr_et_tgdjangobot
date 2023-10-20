@@ -36,6 +36,7 @@ async def get_menu(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == 'get_start')
 async def get_menu(callback: types.CallbackQuery):
+    callback.answer()
     user = await db.start_user(callback.message.from_user.id, callback.message.from_user.username)
     if user.is_admin:
         await callback.message.answer(text = "Вы зашли в админ панель", reply_markup=kb.get_adminkb())
@@ -55,7 +56,7 @@ async def get_menu(callback: types.CallbackQuery, callback_data: kb.ProductCallb
     res = await db.product_detail(callback_data.id)
     category = await db.category_get_by_product(res.id)
     await callback.answer()
-    await callback.message.answer_photo(photo=res.image, caption=f"<b>{res.title}</b>\n{res.price}", reply_markup=kb.get_product_detailkb(res.id,category.id))
+    await callback.message.answer( text=f"<b>{res.title}</b>\n{res.price}", reply_markup=kb.get_product_detailkb(res.id,category.id))
 
 
 @dp.callback_query(kb.ProductCallback.filter(F.action == 'add_one'))
@@ -71,10 +72,34 @@ async def get_menu(callback: types.CallbackQuery, callback_data: kb.ProductCallb
 #! cart handlers##############################
 
 @dp.callback_query(kb.CartCallback.filter(F.action == 'get'))
-async def get_menu(callback: types.CallbackQuery, callback_data: kb.CartCallback):
+async def get_cart(callback: types.CallbackQuery, callback_data: kb.CartCallback):
     await callback.answer('Загрузка...')
     cart_list = await db.cart_get(callback.from_user.id)
-    await callback.message.answer(cart_list)
+    await callback.message.answer(cart_list, reply_markup=kb.get_zakazkb(callback.from_user.id))
+
+@dp.callback_query(kb.CartCallback.filter(F.action == 'confirm'))
+async def confirm_cart(callback: types.CallbackQuery, callback_data: kb.CartCallback):
+    await callback.answer('')
+    await callback.message.answer('Мы приняли ваш заказ. Ожидайте ответа от менеджера', reply_markup=kb.get_start_kb(callback.from_user.id))
+    cart_list = await db.cart_confirm(callback.from_user.id)
+    user_id = await db.get_admin_user()
+    await bot.send_message(user_id,cart_list)
+    await db.cart_delete(callback.from_user.id)
+
+@dp.callback_query(F.data == 'order_kozu')
+async def confirm_kozu(callback: types.CallbackQuery):
+    await callback.answer('')
+    await callback.message.answer('Мы приняли ваш заказ. Ожидайте ответа от менеджера', reply_markup=kb.get_start_kb(callback.from_user.id))
+    user_id = await db.get_admin_user()
+    await bot.send_message(user_id,f'Новый заказ на козу гриль\nАккаунт @{callback.from_user.username}')
+
+
+
+@dp.callback_query(kb.CartCallback.filter(F.action == 'confirm'))
+async def delete_cart(callback: types.CallbackQuery, callback_data: kb.CartCallback):
+    await callback.answer('')
+    await callback.message.answer('Вы отменили заказ', reply_markup=kb.get_start_kb(callback.from_user.id))
+    await db.cart_delete(callback.from_user.id)
     
 
 #! admin handlers##############################

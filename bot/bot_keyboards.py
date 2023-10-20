@@ -17,7 +17,7 @@ class CartCallback(CallbackData, prefix="cart"):
 
 def get_kozu():
     ikb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='Заказать', callback_data='order_kozu'),InlineKeyboardButton(text='Назад', callback_data='/start')],
+        [InlineKeyboardButton(text='Заказать', callback_data='order_kozu'),InlineKeyboardButton(text='Назад', callback_data='get_start')],
     ], row_width=2)
     return ikb
 
@@ -51,6 +51,13 @@ def get_product_detailkb(id,back_id):
     ikb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text='Убрать', callback_data=ProductCallback(id=id, action='remove_one').pack()),InlineKeyboardButton(text='Добавить', callback_data=ProductCallback(id=id, action='add_one').pack())],
         [InlineKeyboardButton(text='Назад', callback_data=CategoryCallback(id=back_id, action='get').pack())],
+    ])
+    return ikb
+
+def get_zakazkb(user_id):
+    ikb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text='Подтвердить заказ', callback_data=CartCallback(id=user_id, action='confirm').pack()),InlineKeyboardButton(text='Отменить заказ', callback_data=CartCallback(id=user_id, action='delete').pack())],
+        [InlineKeyboardButton(text='Назад', callback_data='get_start')],
     ])
     return ikb
 

@@ -45,7 +45,9 @@ class Product(models.Model):
     )
     image = models.CharField(
         'Фото продукта',
-        max_length=555
+        max_length=555,
+        blank=True,
+        null=True
     )
     
 

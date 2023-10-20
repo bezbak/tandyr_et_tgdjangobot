@@ -28,6 +28,11 @@ def product_detail(id):
     return product
 
 @sync_to_async
+def get_admin_user():
+    user = TGUsers.objects.get(is_admin=True)
+    return user.user_id
+
+@sync_to_async
 def product_add_or_remove_to_cart(id, user_id, action):
     product = Product.objects.get(id = id)
     user = TGUsers.objects.get(user_id=user_id)
@@ -63,3 +68,18 @@ def cart_get(user_id):
     cart_items = CartItem.objects.all().filter(quantity__gt = 0, cart = cart)
     text = f"✅✅✅ВАШ ЗАКАЗ✅✅✅\n\n{', '.join(' '.join((i.product.title, '-',str(i.quantity))) for i in cart_items)}\n\nСумма: {cart.total_price} сом"
     return text
+
+@sync_to_async
+def cart_confirm(user_id):
+    user = TGUsers.objects.get(user_id = user_id)
+    cart = Cart.objects.get(user = user)
+    cart_items = CartItem.objects.all().filter(quantity__gt = 0, cart = cart)
+    text = f"✅✅✅НОВЫЙ ЗАКАЗ✅✅✅\n\n{', '.join(' '.join((i.product.title, '-',str(i.quantity))) for i in cart_items)}\n\nСумма: {cart.total_price} сом\n\n Аккаунт @{user.username}"
+    return text
+
+@sync_to_async
+def cart_delete(user_id):
+    user = TGUsers.objects.get(user_id = user_id)
+    cart = Cart.objects.get(user = user)
+    cart.delete()
+    return 'Ваш заказ был отменён'
