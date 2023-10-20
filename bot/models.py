@@ -1,6 +1,23 @@
 from django.db import models
 
 # Create your models here.
+
+class TGUsers(models.Model):
+    user_id = models.PositiveSmallIntegerField(unique=True)
+    username = models.CharField(
+        max_length=255,
+        null=True
+    )
+    is_admin = models.BooleanField(
+        default=False
+    )
+    
+    def __str__(self):
+        return f"{self.id} - @{self.username}"
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 class Category(models.Model):
     name = models.CharField(
         'Название категории',
@@ -26,11 +43,9 @@ class Product(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Категория'
     )
-    image = models.ImageField(
+    image = models.CharField(
         'Фото продукта',
-        blank=True,
-        null=True,
-        upload_to='images/'
+        max_length=555
     )
     
 
@@ -42,11 +57,19 @@ class Product(models.Model):
         verbose_name_plural = 'Продукты'
 
 class Cart(models.Model):
-    user_id = models.PositiveSmallIntegerField(unique=True)
-    total_price = models.PositiveIntegerField()
-    user_name = models.CharField(
-        max_length=255
+    total_price = models.PositiveIntegerField(default=0)
+    user = models.ForeignKey(
+        TGUsers,
+        related_name='carts',
+        on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return f"{self.user.username} - {self.total_price}"
+    
+    class Meta:
+        verbose_name = 'Корзинка'
+        verbose_name_plural = 'Корзинки'
 
 class CartItem(models.Model):
     product = models.ForeignKey(
@@ -59,4 +82,11 @@ class CartItem(models.Model):
         related_name='items',
         on_delete=models.CASCADE
     )
-    quantity = models.PositiveSmallIntegerField()
+    quantity = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.product.title} - {self.quantity}"
+    
+    class Meta:
+        verbose_name = 'Продукт корзинки'
+        verbose_name_plural = 'Продукты  корзинки'
