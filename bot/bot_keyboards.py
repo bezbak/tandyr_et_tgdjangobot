@@ -57,7 +57,7 @@ def get_product_detailkb(id,back_id):
 def get_zakazkb(user_id):
     ikb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text='Подтвердить заказ', callback_data=CartCallback(id=user_id, action='confirm').pack()),InlineKeyboardButton(text='Отменить заказ', callback_data=CartCallback(id=user_id, action='delete').pack())],
-        [InlineKeyboardButton(text='Назад', callback_data='get_start')],
+        [InlineKeyboardButton(text='Назад', callback_data='/start')],
     ])
     return ikb
 

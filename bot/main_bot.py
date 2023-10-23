@@ -86,6 +86,12 @@ async def confirm_cart(callback: types.CallbackQuery, callback_data: kb.CartCall
     await bot.send_message(user_id,cart_list)
     await db.cart_delete(callback.from_user.id)
 
+@dp.callback_query(kb.CartCallback.filter(F.action == 'delete'))
+async def confirm_cart(callback: types.CallbackQuery, callback_data: kb.CartCallback):
+    await callback.answer('')
+    text = await db.cart_delete(callback.from_user.id)
+    await callback.message.answer(text, reply_markup=kb.get_start_kb(callback.from_user.id))
+
 @dp.callback_query(F.data == 'order_kozu')
 async def confirm_kozu(callback: types.CallbackQuery):
     await callback.answer('')
